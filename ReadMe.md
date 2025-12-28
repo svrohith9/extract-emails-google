@@ -2,18 +2,10 @@
 
 Extract email addresses and metadata from Gmail into Google Sheets.
 
-## Usage Terms
+## Usage
 
-This project is published publicly for visibility, but it is not licensed for general use.
-You must obtain explicit written permission from the owner before using, copying, modifying,
-deploying, or redistributing any part of this project.
-
-Owner: Rohith  
-Contact: svrohith9@gmail.com
-
-## Permission Request Template
-
-Use the template here: `PERMISSION_REQUEST.md`
+This project is free to use. If you want to customize or extend it, please fork the repo and
+use your fork for changes and deployments.
 
 ## Quick Start
 
