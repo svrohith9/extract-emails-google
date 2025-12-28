@@ -1,13 +1,21 @@
 # Email Extractor Library
 
-Extract email addresses and email metadata from Gmail into Google Sheets with
-filters for dates, subjects, attachments, and filenames. Designed as both a
-Google Apps Script library and a Gmail add-on UI.
+This project helps developers extract email addresses and message metadata from
+Gmail into a clean, structured Google Sheet. It is built as a reusable Apps
+Script library with an optional Gmail add-on UI, so teams can automate exports,
+audit inboxes, and build lightweight data workflows without standing up servers.
 
 ## Usage
 
 This project is free to use. If you plan to customize or extend it, please
 fork the repo and use your fork for changes and deployments.
+
+## What This Provides
+
+- A library API for scripted extraction workflows
+- A Gmail add-on UI for non-technical users
+- Filters for date ranges, subjects, names, attachments, and filenames
+- Export control for columns like from/to/cc, subject, date, and attachment info
 
 ## Quick Start (Library)
 
@@ -99,6 +107,19 @@ extractEmailsWithFilters({
   subjectContains: "invoice",
 });
 ```
+
+## When to Use This
+
+- Exporting leads or contacts from a mailbox
+- Auditing messages by date or subject
+- Finding attachments by file type or filename pattern
+- Building ad-hoc reports without external tooling
+
+## Limitations
+
+- Apps Script execution limits apply; large runs may time out
+- Gmail search syntax and mailbox access control the results
+- Each extraction creates a new Google Sheet
 
 ## Operational Notes
 
