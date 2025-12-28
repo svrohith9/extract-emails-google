@@ -2,6 +2,36 @@
 
 Extract email addresses and metadata from Gmail into Google Sheets.
 
+## Usage Terms
+
+This project is published publicly for visibility, but it is not licensed for general use.
+You must obtain explicit written permission from the owner before using, copying, modifying,
+deploying, or redistributing any part of this project.
+
+Owner: Rohith  
+Contact: svrohith9@gmail.com
+
+## Permission Request Template
+
+Subject: Permission request to use Email Extractor Library
+
+Hello Rohith,
+
+I would like permission to use the Email Extractor Library for the following purpose:
+
+- Intended use:
+- Organization/Company:
+- Project name:
+- Estimated users/volume:
+- Duration of use:
+- Any modifications planned:
+
+If approved, I will follow your terms and attribution requirements.
+
+Thank you,  
+[Your Name]  
+[Contact Information]
+
 ## Quick Start
 
 1. Open Google Sheets -> Extensions -> Apps Script
