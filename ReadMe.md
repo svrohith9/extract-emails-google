@@ -61,6 +61,16 @@ https://script.google.com/macros/library/d/SCRIPT_ID/4
 If you deploy as a Gmail add-on, the UI provides checkboxes for export fields,
 date range selection (including custom dates), and advanced filters.
 
+## Screenshots
+
+Gmail add-on UI:
+
+![Gmail add-on UI](assets/screenshots/ui-overview.png)
+
+Sample export sheet:
+
+![Sample export sheet](assets/screenshots/sheet-output.png)
+
 ## Filters
 
 - `dateRange`: today, yesterday, last7days, last30days, thismonth, lastmonth, custom
