@@ -1,13 +1,15 @@
 # Email Extractor Library
 
-Extract email addresses and metadata from Gmail into Google Sheets.
+Extract email addresses and email metadata from Gmail into Google Sheets with
+filters for dates, subjects, attachments, and filenames. Designed as both a
+Google Apps Script library and a Gmail add-on UI.
 
 ## Usage
 
-This project is free to use. If you want to customize or extend it, please fork the repo and
-use your fork for changes and deployments.
+This project is free to use. If you plan to customize or extend it, please
+fork the repo and use your fork for changes and deployments.
 
-## Quick Start
+## Quick Start (Library)
 
 1. Open Google Sheets -> Extensions -> Apps Script
 2. Click the plus icon next to Libraries
@@ -43,8 +45,31 @@ function testExtraction() {
 https://script.google.com/macros/library/d/SCRIPT_ID/4
 ```
 
-- `SCRIPT_ID`: Your library ID
-- `4`: Current version number
+- `SCRIPT_ID`: your library ID
+- `4`: published version
+
+## Gmail Add-on UI
+
+If you deploy as a Gmail add-on, the UI provides checkboxes for export fields,
+date range selection (including custom dates), and advanced filters.
+
+## Filters
+
+- `dateRange`: today, yesterday, last7days, last30days, thismonth, lastmonth, custom
+- `startDate`, `endDate`: YYYY/MM/DD when using custom range
+- `emailFolder`: all, inbox, sent, drafts
+- `emailContains`, `nameContains`, `subjectContains`
+- `attachmentTypes`: pdf, images, zip, docs
+- `filenamePattern` + `filenameMatchType`: contains, startsWith, endsWith
+- `deduplicate`: true or false
+
+## Export Fields
+
+Set `exportFields` with any of:
+
+- from, to, cc
+- name, subject, date
+- hasAttachments, attachmentTypes
 
 ## Publishing as a Google Apps Script Library
 
@@ -74,3 +99,13 @@ extractEmailsWithFilters({
   subjectContains: "invoice",
 });
 ```
+
+## Operational Notes
+
+- Large extractions can time out; start with smaller ranges and batch sizes.
+- Gmail search syntax applies; results depend on user mailbox access.
+- The script creates a new Google Sheet per extraction.
+
+## License
+
+MIT. See `LICENSE`.

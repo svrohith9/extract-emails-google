@@ -53,6 +53,12 @@ function normalizeFilters(filters) {
     normalized.exportFields = ["from", "date"];
   }
 
+  if (normalized.deduplicate === undefined) normalized.deduplicate = true;
+
+  if (!normalized.startDate && !normalized.endDate && !normalized.dateRange) {
+    normalized.dateRange = "last30days";
+  }
+
   if (normalized.dateRange && (!normalized.startDate || !normalized.endDate)) {
     const range = parseDateRange(normalized.dateRange, normalized);
     if (!normalized.startDate) normalized.startDate = range.startDate || null;
@@ -81,6 +87,7 @@ function fetchEmails(filters) {
       for (const message of thread.getMessages()) {
         if (emails.length >= maxEmails) break;
 
+        const attachments = message.getAttachments();
         emails.push({
           id: message.getId(),
           subject: message.getSubject(),
@@ -88,8 +95,8 @@ function fetchEmails(filters) {
           to: message.getTo(),
           cc: message.getCc(),
           date: message.getDate(),
-          hasAttachments: message.getAttachments().length > 0,
-          attachments: message.getAttachments(),
+          hasAttachments: attachments.length > 0,
+          attachments: attachments,
         });
       }
     }
@@ -104,7 +111,9 @@ function buildSearchQuery(filters) {
   if (filters.startDate) parts.push(`after:${filters.startDate}`);
   if (filters.endDate) parts.push(`before:${filters.endDate}`);
   if (filters.hasAttachments === true) parts.push("has:attachment");
-  if (filters.emailFolder) parts.push(`in:${filters.emailFolder}`);
+  if (filters.emailFolder && filters.emailFolder !== "all") {
+    parts.push(`in:${filters.emailFolder}`);
+  }
   if (filters.subjectKeyword) parts.push(`subject:"${filters.subjectKeyword}"`);
 
   return parts.join(" ") || "in:all";
@@ -132,7 +141,9 @@ function parseDateRange(range, filters) {
     case "last7days":
       return { startDate: formatDate(new Date(now.getTime() - 7 * 86400000)) };
     case "last30days":
-      return { startDate: formatDate(new Date(now.getTime() - 30 * 86400000)) };
+      return {
+        startDate: formatDate(new Date(now.getTime() - 30 * 86400000)),
+      };
     case "thismonth":
       return {
         startDate: formatDate(new Date(now.getFullYear(), now.getMonth(), 1)),
@@ -295,7 +306,7 @@ function buildRow(email, fields) {
     const names = [email.from, email.to, email.cc]
       .map(parseName)
       .filter(Boolean);
-    row.push([].concat(Array.from(new Set(names))).join(", "));
+    row.push(Array.from(new Set(names)).join(", "));
   }
 
   if (fields.includes("subject")) row.push(email.subject);
@@ -326,7 +337,7 @@ function parseName(emailString) {
 function extractEmailsFromString(text) {
   if (!text) return [];
   const regex = /[\w._%+-]+@[\w.-]+\.[A-Za-z]{2,}/g;
-  return [].concat(Array.from(new Set(text.match(regex) || [])));
+  return Array.from(new Set(text.match(regex) || []));
 }
 
 // ==================== UI (GMAIL ADD-ON) ====================
@@ -360,7 +371,9 @@ function createVolumeSection() {
 function createDateSection(showCustom, formInputs) {
   const section = CardService.newCardSection()
     .setHeader("When?")
-    .addWidget(createDateRangeDropdown(formInputs.dateRange && formInputs.dateRange[0]));
+    .addWidget(
+      createDateRangeDropdown(formInputs.dateRange && formInputs.dateRange[0])
+    );
 
   if (showCustom) {
     section.addWidget(createCustomStartDateInput());
@@ -570,20 +583,31 @@ function handleExtraction(e) {
   let dateFilter = {};
   if (formInputs.dateRange && formInputs.dateRange[0] === "custom") {
     dateFilter = {
-      startDate: formInputs.customStartDate && formInputs.customStartDate[0] || null,
-      endDate: formInputs.customEndDate && formInputs.customEndDate[0] || null,
+      startDate:
+        (formInputs.customStartDate && formInputs.customStartDate[0]) || null,
+      endDate:
+        (formInputs.customEndDate && formInputs.customEndDate[0]) || null,
     };
   } else {
-    dateFilter = parseDateRange(formInputs.dateRange && formInputs.dateRange[0] || "last30days", {});
+    dateFilter = parseDateRange(
+      (formInputs.dateRange && formInputs.dateRange[0]) || "last30days",
+      {}
+    );
   }
 
   const exportFields = [];
-  if (formInputs.exportFrom && formInputs.exportFrom[0]) exportFields.push("from");
-  if (formInputs.exportTo && formInputs.exportTo[0]) exportFields.push("to");
-  if (formInputs.exportCc && formInputs.exportCc[0]) exportFields.push("cc");
-  if (formInputs.exportName && formInputs.exportName[0]) exportFields.push("name");
-  if (formInputs.exportSubject && formInputs.exportSubject[0]) exportFields.push("subject");
-  if (formInputs.exportDate && formInputs.exportDate[0]) exportFields.push("date");
+  if (formInputs.exportFrom && formInputs.exportFrom[0])
+    exportFields.push("from");
+  if (formInputs.exportTo && formInputs.exportTo[0])
+    exportFields.push("to");
+  if (formInputs.exportCc && formInputs.exportCc[0])
+    exportFields.push("cc");
+  if (formInputs.exportName && formInputs.exportName[0])
+    exportFields.push("name");
+  if (formInputs.exportSubject && formInputs.exportSubject[0])
+    exportFields.push("subject");
+  if (formInputs.exportDate && formInputs.exportDate[0])
+    exportFields.push("date");
   if (formInputs.exportHasAttachments && formInputs.exportHasAttachments[0]) {
     exportFields.push("hasAttachments");
   }
@@ -598,7 +622,8 @@ function handleExtraction(e) {
     nameContains: (formInputs.nameContains && formInputs.nameContains[0]) || "",
     subjectContains: (formInputs.subjectContains && formInputs.subjectContains[0]) || "",
     filenamePattern: (formInputs.filenamePattern && formInputs.filenamePattern[0]) || "",
-    filenameMatchType: (formInputs.filenameMatchType && formInputs.filenameMatchType[0]) || "contains",
+    filenameMatchType:
+      (formInputs.filenameMatchType && formInputs.filenameMatchType[0]) || "contains",
     attachmentTypes: formInputs.attachmentTypes || [],
     deduplicate: true,
   };
